@@ -63,11 +63,8 @@ class Board:
     def __init__(self, hid=False, size=6):
         self.size = size
         self.hid = hid
-
         self.count = 0
-
         self.field = [["O"] * size for _ in range(size)]
-
         self.busy = []
         self.ships = []
 
@@ -101,8 +98,7 @@ class Board:
         res = ""
         res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
         for i, row in enumerate(self.field):
-            res += f"\n{i + 1} | " + " | ".join(row) + " |"
-
+            res += f"!{i + 1} | " + " | ".join(row) + " |"
         if self.hid:
             res = res.replace("■", "O")
         return res
@@ -169,19 +165,14 @@ class User(Player):
     def ask(self):
         while True:
             cords = input("Ваш ход: ").split()
-
             if len(cords) != 2:
                 print(" Введите 2 координаты! ")
                 continue
-
             x, y = cords
-
             if not (x.isdigit()) or not (y.isdigit()):
                 print(" Введите числа! ")
                 continue
-
             x, y = int(x), int(y)
-
             return Dot(x - 1, y - 1)
 
 
@@ -190,7 +181,7 @@ class Game:
         self.size = size
         pl = self.random_board()
         co = self.random_board()
-        co.hid = True
+        co.hid = False
 
         self.ai = AI(co, pl)
         self.us = User(pl, co)
@@ -231,15 +222,16 @@ class Game:
 
     def loop(self):
         num = 0
+        st = []
+        st2 = []
         while True:
             print("-" * 20)
-            print("Доска пользователя:")
-            print(self.us.board)
-            print("-" * 20)
-            print("Доска компьютера:")
-            print(self.ai.board)
+            print("Доска пользователя:           Доска компьютера:")
+            st = str(self.us.board).split("!")
+            st2 = str(self.ai.board).split("!")
+            for i in range(len(st)):
+                print(f"{st[i]}   {st2[i]}")
             if num % 2 == 0:
-                print("-" * 20)
                 print("Ходит пользователь!")
                 repeat = self.us.move()
             else:
@@ -267,6 +259,3 @@ class Game:
 
 g = Game()
 g.start()
-#123
-#1234
-#123
