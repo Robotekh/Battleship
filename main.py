@@ -30,6 +30,7 @@ class BoardUsedException(BoardException):
 class BoardWrongShipException(BoardException):
     pass
 
+
 class Game:
     def __init__(self, size=6):
         self.size = size
@@ -78,7 +79,7 @@ class Game:
         num = 0
         st = []
         st2 = []
-        repeat_ai = False #Показывает повторно ли ходит AI
+        repeat_ai = False  # Показывает повторно ли ходит AI
         while True:
             print("-" * 20)
             print("Доска пользователя:           Доска компьютера:")
@@ -113,12 +114,13 @@ class Game:
         self.greet()
         self.loop()
 
+
 class Ship:
     def __init__(self, bow, l, o):
         self.bow = bow
         self.l = l
         self.o = o
-        self.lives = l #кол-во жизней корабля
+        self.lives = l  # кол-во жизней корабля
 
     @property
     def dots(self):
@@ -218,6 +220,8 @@ class Player:
     def __init__(self, board, enemy):
         self.board = board
         self.enemy = enemy
+        self.x_old = 0
+        self.y_old = 0
 
     def ask(self):
         raise NotImplementedError()
@@ -234,20 +238,20 @@ class Player:
 
 class AI(Player):
     def ask(self, repeat_ai):
-        if repeat_ai:  # Повторный ход АИ
-            if randint(0, 1):
-                if randint(0, 1):
-                    x = d.x + 1
-                else:
-                    x = d.x - 1
-            else:
-                if randint(0, 1):
-                    y = d.y + 1
-                else:
-                    y = d.y - 1
-            d = Dot(x, y)
+        if repeat_ai:  # Если повторный ход АИ
+            while True:  # Тогда повторяем цикл покачто не сделаем ход в пределах ближайшей точки к подбитому кораблю
+                near_ai = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+                x, y = near_ai[randint(0, 3)]
+                if (0 <= self.x_old + x < 7) and (0 <= self.y_old + y < 7):
+                    d = Dot(self.x_old + x, self.y_old + y)
+                    break
         else:
-            d = Dot(randint(0, 5), randint(0, 5))
+            while True: # Иначе делаем ход в любую клетку где нет знаков "." "X"
+                self.x_old, self.y_old = randint(0, 5), randint(0, 5)
+                if self.enemy.field[self.x_old][self.y_old] != '.' and self.enemy.field[self.x_old][self.y_old] != 'X':
+                    print(self.enemy.field[self.x_old][self.y_old])
+                    d = Dot(self.x_old, self.y_old)
+                    break
         print(f"Ход компьютера: {d.x + 1} {d.y + 1}")
         return d
 
