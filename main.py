@@ -205,10 +205,10 @@ class Board:
                     print("Корабль уничтожен!")
                     return False
                 else:
-                    print(f"Корабль ранен! {d.x} {d.y}")
+                    print(f"Корабль ранен!")
                     return True
 
-        self.field[d.x][d.y] = "."
+        self.field[d.x][d.y] = "T"
         print("Мимо!")
         return False
 
@@ -242,16 +242,20 @@ class AI(Player):
             while True:  # Тогда повторяем цикл покачто не сделаем ход в пределах ближайшей точки к подбитому кораблю
                 near_ai = [(-1, 0), (1, 0), (0, -1), (0, 1)]
                 x, y = near_ai[randint(0, 3)]
-                if (0 <= self.x_old + x < 7) and (0 <= self.y_old + y < 7):
-                    d = Dot(self.x_old + x, self.y_old + y)
-                    break
+                x, y = self.x_old + x, self.y_old + y
+                if (0 <= x < 6) and (0 <= y < 6):
+                    check_simbol = self.enemy.field[x][y]
+                    if check_simbol != '.' and check_simbol != 'X' and check_simbol != 'T':
+                        d = Dot(x, y)
+                        break
         else:
-            while True: # Иначе делаем ход в любую клетку где нет знаков "." "X"
+            while True: # Иначе делаем ход в любую клетку где нет знаков "." "X" "T"
                 self.x_old, self.y_old = randint(0, 5), randint(0, 5)
-                if self.enemy.field[self.x_old][self.y_old] != '.' and self.enemy.field[self.x_old][self.y_old] != 'X':
-                    print(self.enemy.field[self.x_old][self.y_old])
+                check_simbol = self.enemy.field[self.x_old][self.y_old]
+                if check_simbol != '.' and check_simbol != 'X' and check_simbol != 'T':
                     d = Dot(self.x_old, self.y_old)
                     break
+
         print(f"Ход компьютера: {d.x + 1} {d.y + 1}")
         return d
 
